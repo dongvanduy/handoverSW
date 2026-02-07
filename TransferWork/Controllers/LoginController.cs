@@ -1,19 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Entity.Migrations;
-using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using System.Web.Helpers;
 using System.Web.Mvc;
-using System.Web.Security;
-using HandOver.Common;
 
 namespace HandOver.Controllers
 {
@@ -21,7 +11,6 @@ namespace HandOver.Controllers
     {
         // GET: Login
         private readonly TransferWorkEntities db = new TransferWorkEntities();
-        static readonly HttpClient client = new HttpClient();
         public ActionResult Index()// Login view and check remember login
         {
             return View();
@@ -38,25 +27,12 @@ namespace HandOver.Controllers
             {                           
                 if (user.Password == "-1")
                 {
-                    string UserData = await GetUserDataAsync(CardID);
-                    if (UserData != "")
-                    {
-                        string hireDate = Function.GetTextString(UserData, "\"HIREDATE\":\"", "\",\"");
-                        DateTime dateStart = DateTime.ParseExact(hireDate, "yyyy/MM/dd", CultureInfo.InvariantCulture);
-                        string CnName = Function.GetTextString(UserData, "\"USER_NAME\":\"", "\",\"");
-                        string Gender = Function.GetTextString(UserData, "\"SEX\":\"", "\",\"");
-
-                        user.Password = hireDate.Replace("/", "").Substring(2);
-                        user.StartDate = dateStart;
-                        user.CnName = CnName;
-                        user.Gender = Gender;
-                        db.Users.AddOrUpdate(user);
-                        db.SaveChanges();
-                    }
-                    else
-                    {
-                        return Json(new { Status = "No Card ID" });
-                    }
+                    user.Password = Password;
+                    user.StartDate = null;
+                    user.CnName = string.IsNullOrWhiteSpace(user.CnName) ? "N/A" : user.CnName;
+                    user.Gender = string.IsNullOrWhiteSpace(user.Gender) ? "N/A" : user.Gender;
+                    db.Users.AddOrUpdate(user);
+                    db.SaveChanges();
                 }
 
                 if (user.Password != Password)
@@ -92,6 +68,44 @@ namespace HandOver.Controllers
                 }
             }
         } 
+        [HttpPost]
+        public JsonResult Register(string CardID, string Password, string ConfirmPassword, string Department, string VnName, string EnName)
+        {
+            if (string.IsNullOrWhiteSpace(CardID) || string.IsNullOrWhiteSpace(Password) || string.IsNullOrWhiteSpace(ConfirmPassword)
+                || string.IsNullOrWhiteSpace(Department) || string.IsNullOrWhiteSpace(VnName))
+            {
+                return Json(new { Status = "Missing Fields" });
+            }
+
+            if (Password != ConfirmPassword)
+            {
+                return Json(new { Status = "Confirm Password Wrong" });
+            }
+
+            if (db.Users.Any(u => u.CardID == CardID))
+            {
+                return Json(new { Status = "Card ID Exists" });
+            }
+
+            var user = new User
+            {
+                CardID = CardID.Trim(),
+                Password = Password,
+                Department = Department.Trim(),
+                VnName = VnName.Trim(),
+                EnName = string.IsNullOrWhiteSpace(EnName) ? "N/A" : EnName.Trim(),
+                CnName = "N/A",
+                Gender = "N/A",
+                StartDate = null,
+                Role = 3,
+                IsActive = 1
+            };
+
+            db.Users.Add(user);
+            db.SaveChanges();
+
+            return Json(new { Status = "Success" });
+        }
         public ActionResult Logout()
         {
             HttpCookie myCookie = new HttpCookie("UserCookies");
@@ -153,24 +167,6 @@ namespace HandOver.Controllers
             Response.Cookies["UserCookies"]["Password"] = Function.GetStringMD5(Password);
             Response.Cookies["UserCookies"]["LoginTime"] = DateTime.Now.ToString("yyyy/MM/dd HH:MM:ss");
             Response.Cookies["UserCookies"].Expires = DateTime.Now.AddDays(15);
-        }
-        private async Task<string> GetUserDataAsync(string CardID)
-        {
-            try
-            {
-                string url = "http://10.224.69.100/postman/api/hr/getEmpObj?id=" + CardID;
-                HttpResponseMessage response = await client.GetAsync(url);
-                response.EnsureSuccessStatusCode();
-
-                string responseBody = await response.Content.ReadAsStringAsync();
-                return responseBody;
-            }
-            catch (HttpRequestException e)
-            {
-                Console.WriteLine("\nException Caught!");
-                Console.WriteLine("Message :{0} ", e.Message);
-                return "";
-            }
         }
     }
    

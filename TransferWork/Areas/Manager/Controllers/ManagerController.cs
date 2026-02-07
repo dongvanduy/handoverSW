@@ -35,8 +35,27 @@ namespace HandOver.Areas.Manager.Controllers
         {
             List<Work> ListWork = db.Works.ToList();
             List<Work> newListWork = null;
+            int[] statusTotals = new int[4];
             try
             {
+                foreach (var work in ListWork)
+                {
+                    switch (work.Status)
+                    {
+                        case "On-going":
+                            statusTotals[0]++;
+                            break;
+                        case "Done":
+                            statusTotals[1]++;
+                            break;
+                        case "Open":
+                            statusTotals[2]++;
+                            break;
+                        case "Close":
+                            statusTotals[3]++;
+                            break;
+                    }
+                }
                 
                 if (month == 0)
                 {
@@ -112,7 +131,7 @@ namespace HandOver.Areas.Manager.Controllers
                     flagGetListUser = true;
                     
                 }
-                return Json(new { success = true, ListWorks = newListWork, ListUser = ListUser, ListModel = ListModel }, JsonRequestBehavior.AllowGet);
+                return Json(new { success = true, ListWorks = newListWork, ListUser = ListUser, ListModel = ListModel, StatusTotals = statusTotals }, JsonRequestBehavior.AllowGet);
             }
             catch
             {

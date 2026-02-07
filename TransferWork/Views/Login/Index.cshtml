@@ -82,7 +82,7 @@
                                             <button class="btn btn-primary w-100" type="button" onclick="login()">Login</button>
                                         </div>
                                         <div class="col-12">
-                                            <p class="small mb-0">Don't have account? <a href="#">Contact us.</a></p>
+                                            <p class="small mb-0">Don't have account? <a data-bs-toggle="modal" data-bs-target="#RegisterModal" href="">Register here.</a></p>
                                         </div>
                                         <div class="col-12" style="margin-top: 5px;">
                                             <p class="small mb-0"><a data-bs-toggle="modal" data-bs-target="#LoginGuide" href="">Login for the first time?</a></p>
@@ -116,6 +116,57 @@
                 </div>
             </div>
         </div><!-- End Vertically centered Modal-->
+        <div class="modal fade" id="RegisterModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Register account</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row g-3 needs-validation" id="RegisterForm" novalidate>
+                            <div class="col-12">
+                                <label for="registerCardId" class="form-label">Card ID</label>
+                                <input type="text" class="form-control" id="registerCardId" required maxlength="50">
+                                <div class="invalid-feedback" id="registerCardIdFeedback">Please enter your Card ID.</div>
+                            </div>
+                            <div class="col-12">
+                                <label for="registerVnName" class="form-label">Vietnamese Name</label>
+                                <input type="text" class="form-control" id="registerVnName" required maxlength="100">
+                                <div class="invalid-feedback" id="registerVnNameFeedback">Please enter your Vietnamese name.</div>
+                            </div>
+                            <div class="col-12">
+                                <label for="registerEnName" class="form-label">English Name (Optional)</label>
+                                <input type="text" class="form-control" id="registerEnName" maxlength="100">
+                            </div>
+                            <div class="col-12">
+                                <label for="registerDepartment" class="form-label">Department</label>
+                                <select class="form-select" id="registerDepartment" required>
+                                    <option value="">Select department</option>
+                                    <option value="PE">PE</option>
+                                    <option value="RE">RE</option>
+                                </select>
+                                <div class="invalid-feedback" id="registerDepartmentFeedback">Please choose your department.</div>
+                            </div>
+                            <div class="col-12">
+                                <label for="registerPassword" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="registerPassword" required maxlength="50">
+                                <div class="invalid-feedback" id="registerPasswordFeedback">Please enter your password.</div>
+                            </div>
+                            <div class="col-12">
+                                <label for="registerConfirmPassword" class="form-label">Confirm Password</label>
+                                <input type="password" class="form-control" id="registerConfirmPassword" required maxlength="50">
+                                <div class="invalid-feedback" id="registerConfirmPasswordFeedback">Please confirm your password.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="registerUser()">Register</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </main><!-- End #main -->
 
