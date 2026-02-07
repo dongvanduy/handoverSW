@@ -246,6 +246,8 @@ function CreateChartData(listWorks, updatePieChart, updateColChart) {
         else {
             pieChart.updateSeries(PieChartData, true);
         }
+
+        UpdateStatusTotals(PieChartData);
     }
     else {
         $.each(listWorks, function (key, value) {
