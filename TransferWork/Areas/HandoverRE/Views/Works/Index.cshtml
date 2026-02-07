@@ -1,0 +1,109 @@
+﻿
+@{
+    ViewBag.Title = "RE";
+    Layout = "~/Areas/Views Shared/_LayoutAreas.cshtml";
+}
+
+<div class="pagetitle">
+    <p class="fw-bold fs-5">RE Hand Over</p>
+</div>
+<!-- Datatable-->
+<div class="card">
+    <div class="card-body">
+        <table class="dataTable table table-hover table-striped" id="MyTable" style="overflow: auto;">
+            <thead>
+                <tr>
+                    <th>
+                        Date
+                    </th>
+                    <th style="text-align-last: center !important">
+                        <select class="headerSelect" id="CTFSelect" onchange="SelectedFilter('CTF')">
+                            <option selected>CTF</option>
+                            <option>Netgear</option>
+                            <option>Arlo</option>
+                        </select>
+                    </th>
+                    <th style="text-align-last: center !important">
+                        <select class="headerSelect" id="ModelSelect" onchange="SelectedFilter('Model')">
+                            <option selected>Model</option>
+                            <option>U12C298T55 U12C298T55</option>
+                        </select>
+                    </th>
+                    <th style="text-align-last: center !important">
+                        <select class="headerSelect" id="TypeSelect" onchange="SelectedFilter('Type')">
+                            <option selected>Type</option>
+                            <option>CTR</option>
+                            <option>FW</option>
+                            <option>RMA</option>
+                            <option>YR</option>
+                            <option>MOH</option>
+                            <option>Orther</option>
+                        </select>
+                    </th>
+                    <th style="text-align: center !important">
+                        Works
+                    </th>
+                    <th style="text-align: center">
+                        Owner
+                    </th>
+                    <th style="margin-left: -5px;">
+                        Due Date
+                    </th>
+                    <th style="text-align-last: center !important">
+                        <select class="headerSelect" id="StatusSelect" onchange="SelectedFilter('Status')">
+                            <option selected>Status</option>
+                            <option>Done</option>
+                            <option>On-going</option>
+                            <option>Open</option>
+                            <option>Close</option>
+                        </select>
+                    </th>
+                    <th class="text-end">
+
+                    </th>
+                </tr>
+            </thead>
+            <tbody id="table_Body">
+                <tr>
+                    <td class="col_1">
+                        <label class="col-12"><b>2023-04-26</b></label>
+                        <label class="col-12">08:46</label>
+                    </td>
+                    <td class="col_2">Netgear</td>
+                    <td class="col_6">U12C298T55</td>
+                    <td class="col_2">CTR</td>
+                    <td class="col_3">
+                        <p class="text-over">
+                            1. Confirm product issue - Damage location ?2. Confirm with ME use cutting tool? 3. Co-work with IPQC add check cutting tool into list checking4. . Confirm product issue - Damage location ?2. Confirm
+                        </p>
+                    </td>
+                    <td class="col_5">
+                        <a href="#" class="col-12">Phạm Văn Hoàng</a>
+                    </td>
+                    <td class="col_1">
+                        <label class="col-12"><b>2023-04-26</b></label>
+                        <label class="col-12">08:46</label>
+                    </td>
+                    <td class="col_6">
+                        <span class="badge rounded-pill bg-warning text-dark">On-going</span>
+                    </td>
+                    <td class="col_7">
+                        <button type="button" class="btn btn-warning" data-toggle="tooltip" title="Edit">
+                            <i class="bi bi-pencil-square"></i>
+                        </button>
+                        <button type="button" class="btn btn-info" data-toggle="tooltip" title="Detail">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button type="button" class="btn btn-danger" data-toggle="tooltip" title="Delete">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section render{
+    <script src="~/MyAssets/Js/PageRE.js?@Guid.NewGuid()"></script>
+}

@@ -1,0 +1,343 @@
+﻿.logo img{
+    margin-bottom: 5px;
+}
+.dataTable-top > .header {
+    height: auto;
+    padding: 0;
+    background-color: transparent;
+    box-shadow: none;
+}
+.headerSelect {
+    font-size: 16px;
+    font-weight: 700;
+    border: 0;
+}
+.headerSelect :focus-visible {
+    border: 0;
+}
+.text-over {
+    margin-bottom: 0;
+    -webkit-line-clamp: 1;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+tbody > tr > td{
+    vertical-align: middle !important;
+}
+td button{
+    background-color: transparent !important;
+    border-color: transparent !important;
+    color: black !important;
+}
+.dataTable-top{
+    padding: 8px 0;
+}
+.dataTable-top > button{
+    font-weight: bold;
+}
+.table-hover > tbody > tr:hover > * {
+    box-shadow: inset 0px 0px 0px 999px #e9fcff;
+}
+.dataTable-bottom{
+    padding: 0;
+}
+.modal-footer > button{
+    width: 20%;
+}
+.btn-outline-danger {
+    border: 0;
+    border-radius: 25%;
+}
+.modal-body .row {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+    .modal-body .row .card .card-body {
+        padding: 0;
+    }
+
+.col-6.row {
+    margin-top: 15px;
+    padding: 0;
+}
+
+    .col-6.row .card {
+        box-shadow: none;
+        margin: 0;
+    }
+
+.row.mb-3 {
+    margin-bottom: 2rem !important;
+}
+#add_work, #add_result, #Edit_Detail, #Edit2_Work, #Edit2_Result {
+    height: 120px !important;
+    resize: none;
+}
+div.col-11{
+    padding-left: 0;
+}
+.required *:after {
+    content: " *";
+    color: red;
+}
+.col_1{
+    min-width: 120px;
+    width:120px;
+    max-width: 120px;
+}
+.col_2 {
+    max-width: 75px;
+    min-width: 75px;
+    width: 75px;
+    text-align: center;
+}
+.col_3{
+    min-width: 400px;
+}
+    .col_3 p {
+        display: -webkit-box;
+        -webkit-line-clamp: 1; /* Số dòng muốn hiển thị */
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        text-align: justify;
+    }
+.col_4 {
+    max-width: 180px;
+    min-width: 180px;
+    width: 180px;
+}
+.col_5 {
+    min-width: 200px;
+    text-align: center !important;
+}
+.col_6 {    
+    max-width: 150px;
+    width: 150px;
+    min-width: 150px;
+    text-align: center;
+}
+.col_7 {
+    max-width: 65px;
+    width: 65px;
+    min-width: 65px;
+    text-align: center;
+}
+.statusAndTypeDetail {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 0;
+    padding: 0;
+}
+
+    .statusAndTypeDetail > p {
+        padding: 0;
+        margin: 0;
+        font-size: 20px;
+        font-weight: bold;
+    }
+#card_Status{
+    margin: 0;
+    height: 40px;
+    color: black;
+}
+#card_Type {
+    height: 100%;
+    color: black;
+}
+#OwReq > label{
+    border-bottom: 1px solid #808080;
+
+}
+.userHeader {
+    color: #fff;
+    border-radius: 15px 15px 0 0;
+}
+    .userHeader.Req {
+        text-align: center;
+        font-weight: 700;
+        background-color: #dddddd;
+        color: #000000;
+    }
+    .userHeader.Rec {
+        text-align: center;
+        font-weight: 700;
+        background-color: #dddddd;
+        color: #000000;
+    }
+.dateTitile {
+    background-color: #ededed;
+    border-radius: 15px 0 0 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    color: black;
+}
+
+    .dateTitile > h5 {
+        font-weight: bold;
+    }
+
+.dateTimeDetail {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.areaDetail {
+    padding: 10px !important;
+    text-align: justify;
+    font-size: 18px;
+}
+/* EVM */
+
+.e_col_1 {
+    width: 75px;
+    max-width: 75px;
+    min-width: 75px;
+    text-align: center;
+}
+.e_col_2 {
+    width: 120px;
+    max-width: 120px;
+    min-width: 120px;
+}
+.e_col_3 {
+    width: 120px;
+    max-width: 120px;
+    min-width: 120px;
+}
+.e_col_4 {
+
+}
+.e_col_5 {
+}
+.e_col_6 {
+}
+.e_col_7 {
+}
+.e_col_8 {
+}
+.e_col_4 p, .e_col_5 p, .e_col_6 p {
+    border-bottom: 1px solid #dbdbdb;
+}
+select {
+    padding-top: 10px;
+    border-radius: 5px;
+}
+table .btn{
+    font-size: 0.7rem;
+}
+.row .col-12{
+    margin-bottom: 10px;
+}
+.col-12 .form-label {
+    margin: 0;
+}
+#Edit2Modal .col-md-12 {
+    padding-right: calc(var(--bs-gutter-x) * 1);
+    padding-left: calc(var(--bs-gutter-x) * 1);
+}
+
+#details_cardHead, #details_cardHead1 {
+    background-color: aliceblue;
+    border-radius: 9px 9px 0 0;
+    color: dimgrey;
+    font-size: 1rem;
+    font-weight: bold;
+}
+#row_detail_footer {
+    border: none !important;
+}
+#details_info {
+    border: 1px solid;
+    border-radius: 10px;
+}
+    #details_info .row {
+        border-bottom: 1px solid lightgrey;
+        padding: 5px 0;
+    }
+    #details_info .row .col-3 {
+        font-weight: bold;
+        color: grey;
+        font-size: 1rem;
+        align-self: center;
+    }
+        #details_info .row .col-8 {
+            font-weight: bold;
+        }
+#details_owner {
+    margin-top: 1rem;
+    border: 1px solid #fec4c5;
+    border-radius: 10px;
+}
+    #details_owner #details_cardHead {
+        background-color: #ffc4c4;
+        border: none;
+    }
+    #details_owner .row {
+        font-weight: bold;
+        font-size: 1rem;
+        padding: 5px 0;
+        border-top: 1px solid lightgrey;
+    }
+        #details_owner .row .col-3 {
+            font-weight: bold;
+            color: grey;
+            font-size: 1rem;
+            align-self: center;
+        }
+#details_owner_rc {
+    margin-top: 1rem;
+    border: 1px solid #608bfb;
+    border-radius: 10px;
+}
+
+    #details_owner_rc #details_cardHead {
+        background-color: #afc6ff;
+        border: none;
+    }
+
+    #details_owner_rc .row {
+        font-weight: bold;
+        font-size: 1rem;
+        padding: 5px 0;
+        border-top: 1px solid lightgrey;
+    }
+
+        #details_owner_rc .row .col-3 {
+            font-weight: bold;
+            color: grey;
+            font-size: 1rem;
+            align-self: center;
+        }
+
+#col_5 {
+    /*box-shadow: 5px 0px 10px 0px rgba(0, 0, 0, 0.5);*/
+    border-radius: 10px;
+    padding: 10px;
+}
+#col_7 {
+    /*border-radius: 10px;
+    border: 1px dashed;*/
+    padding: 10px 10px 10px 20px;
+    font-size: 1rem;
+}
+.dataTable-table > tbody > tr > td, .dataTable-table > thead > tr > th {
+    padding: 0;
+}
+.dataTable-headercontainer {
+    padding-right: 20px;
+}
+.form-label {
+    font-weight: 600 !important;
+    color: #5a5a5a !important;
+}
+.accordion-button {
+    font-size: 1.2rem;
+    font-weight: bold;
+}

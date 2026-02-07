@@ -1,0 +1,134 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <title>Login - Handover System</title>
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+
+    <!-- Favicons -->
+    <link href="~/MyAssets/image/fii-logo.jpg" rel="icon">
+    <!-- Google Fonts -->
+    <link href="~/MyAssets/Css/GoogleFonts.css" rel="stylesheet" />
+    <!-- Vendor CSS Files -->
+    <link href="~/NiceAdmin/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <!-- Template Main CSS File -->
+    <link href="~/NiceAdmin/css/style.css" rel="stylesheet">
+    <!-- Custume CSS File -->
+    <link href="~/MyAssets/Css/Login.css" rel="stylesheet">
+    <!-- =======================================================
+    * Template Name: NiceAdmin - v2.3.1
+    * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
+    * Author: BootstrapMade.com
+    * License: https://bootstrapmade.com/license/
+    ======================================================== -->
+</head>
+
+<body>
+    <main style="background-image: linear-gradient(white, #cdcdcd, #a6c8ff)">
+        <div class="container">
+
+            <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="d-flex justify-content-center py-4">
+                            <!-- Logo -->
+                            <a href="index.html" class="logo d-flex align-items-center w-auto">
+                                <img src="~/MyAssets/image/fii-logo.jpg" alt="">
+                                <span class="d-none d-lg-block">PE - RE Handover System</span>
+                            </a>
+                        </div><!-- End Logo -->
+                        <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <div class="pt-4 pb-2">
+                                        <h5 class="card-title text-center pb-0 fs-4">Login to Your Account</h5>
+                                        <p class="text-center small">Enter your Card ID & Password to login</p>
+                                    </div>
+                                    <div class="row g-3 needs-validation" id="LoginForm" novalidate>
+                                        <div class="col-12">
+                                            <label for="yourUsername" class="form-label">Card ID</label>
+                                            <div class="input-group has-validation">
+                                                <input type="text" name="cardId" class="form-control" id="cardId" required autofocus maxlength="50">
+                                                <div class="invalid-feedback" id="cardIDFeedback">Please enter your Card ID.</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-12">
+                                            <label for="yourPassword" class="form-label">Password</label>
+                                            <div class="input-group has-validation">
+                                                <input type="password" name="password" class="form-control" id="password" required maxlength="50">
+                                                <div class="invalid-feedback" id="passwordFeedback">Please enter your password!</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-12">
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" name="remember" value="true" id="rememberMe">
+                                                        <label class="form-label" for="rememberMe">Remember me</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6 d-flex justify-content-end">
+                                                    <p class="small mb-0"><a data-bs-toggle="modal" data-bs-target="#ForgotPass" href="">Forgot password?</a></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <button class="btn btn-primary w-100" type="button" onclick="login()">Login</button>
+                                        </div>
+                                        <div class="col-12">
+                                            <p class="small mb-0">Don't have account? <a href="#">Contact us.</a></p>
+                                        </div>
+                                        <div class="col-12" style="margin-top: 5px;">
+                                            <p class="small mb-0"><a data-bs-toggle="modal" data-bs-target="#LoginGuide" href="">Login for the first time?</a></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Vertically centered Modal -->
+        <div class="modal fade" id="LoginGuide" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Login guide</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <ul>
+                            <li>Card ID...</li>
+                            <li>Password ...</li>
+                        </ul>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div><!-- End Vertically centered Modal-->
+
+    </main><!-- End #main -->
+
+    <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+    <!-- Vendor JS Files -->
+    <script src="~/NiceAdmin/js/jquery-3.4.1.min.js"></script>
+    <script src="~/NiceAdmin/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- Template Main JS File -->
+    <script src="~/NiceAdmin/js/main.js"></script>
+    <!-- Custume JS File -->
+    <script src="~/MyAssets/Js/Login.js"></script>
+
+</body>
+
+</html>

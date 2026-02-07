@@ -1,0 +1,380 @@
+﻿
+@{
+    ViewBag.Title = "EVM";
+    Layout = "~/Areas/Views Shared/_LayoutAreas.cshtml";
+}
+@section render{
+    <script src="~/MyAssets/Js/PageEVM.js?@Guid.NewGuid()"></script>
+}
+<link href="~/MyAssets/Css/EVM.css" rel="stylesheet" />
+
+<div class="pagetitle">
+    <h1 id="titlePage">EVM</h1>
+</div>
+<!-- Datatable-->
+<div class="card">
+    <div class="card-body">
+        <table class="dataTable table table-hover" id="MyTable" style="overflow: auto;">
+            <thead>
+                <tr>
+                    <th style="text-align:center !important">
+                        ID
+                    </th>
+                    <th style="text-align: center !important">
+                        Date
+                    </th>
+                    <th>
+                        <select class="headerSelect" id="ModelSelected" onchange="SelectedFilter()">
+                            <option selected>Model</option>
+                        </select>
+                    </th>
+                    <th>
+                        SN
+                    </th>
+                    <th>
+                        Item
+                    </th>
+                    <th style="padding-left: 0">
+                        Value
+                    </th>
+                    <th>
+                        Owner
+                    </th>
+                    <th>
+                        <select class="headerSelect" id="StatusSelect" onchange="SelectedFilter()">
+                            <option selected>Status</option>
+                            <option>Done</option>
+                            <option>On-going</option>
+                            <option>Open</option>
+                            <option>Close</option>
+                        </select>
+                    </th>
+                    <th class="text-end">
+
+                    </th>
+                </tr>
+            </thead>
+            <tbody id="table_Body">
+                <tr>
+                    <td class="e_col_1">
+                        0000
+                    </td>
+                    <td class="e_col_2">
+                        <label class="col-12"><b>2023-02-25</b></label>
+                        <label class="col-12">16:44:33</label>
+                    </td>
+                    <td class="e_col_3">R5700</td>
+                    <td class="e_col_4">
+                        <p class="text-over">
+                            ZY31254
+                        </p>
+                        <p class="text-over">
+                            ZY31255
+                        </p>
+                        <p class="text-over">
+                            ...
+                        </p>
+                    </td>
+                    <td class="e_col_5">
+                        <p class="text-over">
+                            WriteEncryptionKey_Siren
+                        </p>
+                        <p class="text-over">
+                            WriteEncryptionKey_Siren2
+                        </p>
+                        <p class="text-over">
+                            ...
+                        </p>
+                    </td>
+                    <td class="e_col_6">
+                        <p class="text-over">
+                            0
+                        </p>
+                        <p class="text-over">
+                            0
+                        </p>
+                        <p class="text-over" style="text-align: start;">
+                            ...
+                        </p>
+                    </td>
+                    <td class="col_4">
+                        <label class="col-12">Tien - Eng Name</label>
+                        <a href="#" class="col-12">(V1036157)</a>
+                    </td>
+                    <td class="col_6">
+                        <span class="badge rounded-pill bg-warning text-dark">On-going</span>
+                    </td>
+                    <td class="col_7">
+                        <button type="button" class="btn btn-warning" data-toggle="tooltip" title="Edit">
+                            <i class="bi bi-pencil-square"></i>
+                        </button>
+                        <button type="button" class="btn btn-info" data-toggle="tooltip" title="Detail">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button type="button" class="btn btn-danger" data-toggle="tooltip" title="Delete">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<!-- Modal -->
+<!-- Add modal -->
+<div class="modal fade" id="AddEvm" tabindex="-1">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header" style="color: #0d6efd;">
+                <h3 class="modal-title" style="font-weight: bold;">ADD NEW EVM</h3>
+                <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal" aria-label="Close"><i class="bi bi-x" style="font-size: 20px"></i></button>
+            </div>
+            <div class="modal-body">
+                <form class="g-3">
+                    <div class="col-12 row">
+                        <div class="col-3">
+                            <label class="form-label">Status</label>
+                            <select class="form-select" id="evm_status" disabled>
+                                <option>On-going</option>
+                                <option>Done</option>
+                                <option>Open</option>
+                                <option>Close</option>
+                            </select>
+                        </div>
+                        <div class="col-3">
+                            <label class="form-label">Date</label>
+                            <input type="datetime-local" class="form-control" id="evm_date">
+                        </div>
+                        <div class="col-3 required">
+                            <label class="form-label">Owner</label>
+                            <input type="text" list="add_listOwnerEvm" name="listAdd111" class="form-control" id="evm_owner" autocomplete="off">
+                            <datalist id="add_listOwnerEvm"></datalist>
+                        </div>
+                        <div class="col-3 required">
+                            <label class="form-label ">Model</label>
+                            <input type="text" class="form-control" id="evm_model" list="evm_model_datalist" autocomplete="off">
+                            <datalist id="evm_model_datalist"></datalist>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <h4 class="card-header" style="color: #0d6efd; margin-top: 20px;">Items</h4>
+                        <div class="row">
+                            <div class="col-2 required"><h5>SN</h5></div>
+                            <div class="col-6"><h5>Item</h5></div>
+                            <div class="col-2"><h5>Value</h5></div>
+                            <div class="col-2"><h5></h5></div>
+                        </div>
+                        <div id="DnmContainer" data-RowCount="1">
+                            <div class="row AddDNM" data-RowIndex="1">
+                                <div class="col-2">
+                                    <input type="text" class="form-control">
+                                </div>
+                                <div class="col-6">
+                                    <input type="text" class="form-control">
+                                </div>
+                                <div class="col-2">
+                                    <input type="text" class="form-control">
+                                </div>
+                                <div class="col-2">
+                                    <button type="button" class="btn btn-outline-info" onclick="Refesh(1)">
+                                        <i class="bi bi-arrow-clockwise"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-success" style="margin-left: 15px;" onclick="AddItemDnm()">
+                                        <i class="bi bi-plus-lg"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-outline-primary" id="SaveBtn" onclick="SaveEVM()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Edit modal -->
+<div class="modal fade" id="EditEvm" tabindex="-1">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header" style="color: #ffc107;">
+                <h3 class="modal-title" id="evm_EditHead" style="font-weight:bold">EDIT EVM</h3>
+                <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal" aria-label="Close"><i class="bi bi-x" style="font-size: 20px;"></i></button>
+            </div>
+            <div class="modal-body">
+                <form class="g-3">
+                    <div class="col-12 row">
+                        <div class="col-3">
+                            <label class="form-label">Status</label>
+                            <select class="form-select" id="evm_status_edit">
+                                <option>On-going</option>
+                                <option>Done</option>
+                                <option>Open</option>
+                                <option>Close</option>
+                            </select>
+                        </div>
+                        <div class="col-3">
+                            <label class="form-label">Date</label>
+                            <input type="datetime-local" class="form-control" id="evm_date_edit">
+                        </div>
+                        <div class="col-3 required">
+                            <label class="form-label">Owner</label>
+                            <input type="text" list="add_listOwnerEvm" name="listEdit11" class="form-control" id="evm_owner_edit" autocomplete="off">
+                            <datalist id="edit_listOwnerEvm"></datalist>
+                        </div>
+                        <div class="col-3 required">
+                            <label class="form-label ">Model</label>
+                            <input type="text" class="form-control" id="evm_model_edit" list="evm_model_datalist" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <h4 class="card-header" style="color: #0d6efd; margin-top: 20px;">Items</h4>
+                        <div class="row">
+                            <div class="col-2 required"><h5>SN</h5></div>
+                            <div class="col-6"><h5>Item</h5></div>
+                            <div class="col-2"><h5>Value</h5></div>
+                            <div class="col-2"><h5></h5></div>
+                        </div>
+                        <div id="EditContainer" data-RowCount="1">
+                            <div class="row AddDNM" data-RowIndex="1">
+                                <div class="col-2">
+                                    <input type="text" class="form-control">
+                                </div>
+                                <div class="col-6">
+                                    <input type="text" class="form-control">
+                                </div>
+                                <div class="col-2">
+                                    <input type="text" class="form-control">
+                                </div>
+                                <div class="col-2">
+                                    <button type="button" class="btn btn-outline-info" onclick="Refesh(1)">
+                                        <i class="bi bi-arrow-clockwise"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-success" style="margin-left: 15px;" onclick="EditItemDnm()" data-name="edit">
+                                        <i class="bi bi-plus-lg"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-outline-primary" id="SaveBtn" onclick="SaveEVM_Edit()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Detail modal -->
+<div class="modal fade" id="evmDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header" style="color: #0dcaf0">
+                <div class="col-5">
+                    <h3 class="modal-title" id="evmModalHead" style="font-weight: bold"></h3>
+                </div>
+                <div class="col-2" style="text-align: center">
+                    <div class="card" id="card_Status">
+                        <div class="card-body statusAndTypeDetail">
+                            <p>Default Card</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-5" style="text-align:end">
+                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal" aria-label="Close"><i class="bi bi-x" style="font-size: 20px"></i></button>
+                </div>
+            </div>
+            <div class="modal-body" style="margin: 0">
+                <div class="col-12 row" style="margin-top: 15px;">
+                    <div class="col-5" style="align-self: center;">
+                        <div class="card">
+                            <div class="card-body row" style="height:50px;">
+                                <div class="col-4 dateTitile">
+                                    <h5 class="card-text">Created</h5>
+                                </div>
+                                <div class="col-8 dateTimeDetail" style="align-self: center;">
+                                    <h4 style="margin: 0; font-weight: bold" id="card_Date"></h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card" style="margin-top: 15px;">
+                            <div class="card-body row" style="height:50px;">
+                                <div class="col-4 dateTitile" style="background-color: lemonchiffon;">
+                                    <h5 class="card-text">Model</h5>
+                                </div>
+                                <div class="col-8 dateTimeDetail">
+                                    <h5 style="margin: 0; font-weight: bold" id="card_Model"></h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="col-12 card">
+                            <label class="userHeader Rec">Owner</label>
+                            <div class="card-body row" style="padding: 10px">
+                                <div class="col-4" style="text-align: center;">
+                                    <img id="avtOwner" style="border-radius: 50%">
+                                </div>
+                                <div class="col-8 row" style="border-left: 1px solid">
+                                    <div class="col-4">
+                                        <p><b>Card ID:</b></p>
+                                        <p><b>Name:</b></p>
+                                        <p><b>Depart:</b></p>
+                                    </div>
+                                    <div class="col-8" id="infoOwner">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 row" style="margin-top: 15px;">
+                    <div class="card">
+                        <div><h5 class="card-header" style="padding: 10px;">Result</h5></div>
+                        <div class="card-body areaDetail" id="cardItems">
+                            <div class="row">
+                                <div class="col-3">SN</div>
+                                <div class="col-6">Items</div>
+                                <div class="col-3">Value</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 row" style="margin-top: 15px;" id="cardHistory" hidden>
+                    <div class="card">
+                        <div><h5 class="card-header" style="padding:10px;">History</h5></div>
+                        <div class="card-body areaDetail">
+                            <div id="evmLog">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Delete modal -->
+<div class="modal fade" id="DeleteWorkModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header" style=" color: #dc3545;">
+                <h3 class="modal-title" id="deleteModalHead" style="font-weight: bold">Delete record</h3>
+                <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal" aria-label="Close" style="border: 0"><i class="bi bi-x"></i></button>
+            </div>
+            <div class="modal-body" id="delete_CardBody">
+                This action is irreversible, do you want to proceed?
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-outline-danger" id="deleteBtn" onclick="DeteleWork()" style="border-radius: 0.375rem">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>

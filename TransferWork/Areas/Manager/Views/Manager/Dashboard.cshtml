@@ -1,0 +1,222 @@
+﻿
+@{
+    ViewBag.Title = "Dashboard";
+    Layout = "~/Areas/Views Shared/_LayoutAreas.cshtml";
+}
+
+@section render{
+    <script src="~/NiceAdmin/ApexChart/apexcharts.min.js"></script>
+    <script src="~/NiceAdmin/daterangepicker-master/moment.min.js"></script>
+    <script src="~/MyAssets/Js/ManagerPage.js?@Guid.NewGuid()"></script>
+
+}
+<link href="~/NiceAdmin/ApexChart/apexcharts.css" rel="stylesheet" />
+<link href="~/MyAssets/Css/Manager.css?@Guid.NewGuid()" rel="stylesheet" />
+
+<span style="display: none;" id="titlePage">Dashboard</span>
+
+<div class="card shadow">
+    <div class="p-3">
+        <div class="row m-0">
+            <div class="col-2">
+                <img class="user_img" src="~/MyAssets/image/fii-logo.jpg" alt="image">
+            </div>
+            <div class="col-2">
+                <div class="col-12 " style="display: -webkit-box !important">
+                    <p class="fs-4 fw-bold mb-0" id="info_ID">@ViewBag.ThisUser.CardID</p>
+                </div>
+                <div class="col-12">
+                    <p class="fs-6" id="info_CnName">@ViewBag.ThisUser.CnName</p>
+                </div>
+                <div class="col-12">
+                    <p class="fs-6" id="info_VnName">@ViewBag.ThisUser.VnName</p>
+                </div>
+                <div class="col-12">
+                    <p class="fs-6" id="info_Depart">@ViewBag.ThisUser.Department</p>
+                </div>
+            </div>
+            <div class="col-5 row align-items-center">
+                <div class="col-3">
+                    <div class="p-2 border-dasher-warning h-50">
+                        <p class="fs-4 fw-bold mb-0 text-center" id="Cout_OnGoing" data-count="0" data-unit=""></p>
+                        <p class="mb-0 fw-bold text-center text-warning">On-going</p>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="p-2 border-dasher-success h-40">
+                        <p class="fs-4 fw-bold mb-0 text-center" id="Cout_Done" data-count="0" data-unit=""></p>
+                        <p class="mb-0 fw-bold text-success text-center">Done</p>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="p-2 border-dasher-danger h-40">
+                        <p class="fs-4 fw-bold mb-0 text-center" id="Cout_Open" data-count="0" data-unit=""></p>
+                        <p class="mb-0 fw-bold text-danger text-center">Open</p>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="p-2 border-dasher-secondary h-40">
+                        <p class="fs-4 fw-bold mb-0 text-center" id="Cout_Close" data-count="0" data-unit=""></p>
+                        <p class="mb-0 fw-bold text-secondary text-center">Close</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-2"></div>
+            <div class="col-1 p-2" style="height: 0px;">
+                <a href="#menu" id="toggle"><span></span></a>
+                <div id="menu">
+                    <ul>
+                        <li class="text-start"><span>Filter</span></li>
+                        <li>
+                            <input class="form-control" type="text" list="user_list" id="TypeSelectData" />
+                            <datalist id="user_list">
+                                @{
+                                    if (ViewBag.Role == 1)
+                                    {
+                                        <option>All</option>
+                                        <option>PE Work</option>
+                                        <option>RE Work</option>
+                                    }
+                                    else
+                                    {
+                                        if (ViewBag.ThisUser.Department == "PE")
+                                        {
+                                            <option>PE Work</option>
+                                        }
+                                        else
+                                        {
+                                            <option>RE Work</option>
+                                        }
+                                    }
+                                }
+                                <option>PE-RE Work</option>
+                            </datalist>
+                        </li>
+                        <li class="mt-3">
+                            <div class="row">
+                                <div class="col-8 ps-0"><button class="btn btn-primary w-100" type="button" id="btn_filter">Filter</button></div>
+                                <div class="col-4 pe-0"><button class="btn btn-outline-secondary w-100" type="button" id="btn_reset">Reset</button></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="mt-4">
+    <div class="row">
+        <div class="col-6 ps-0">
+            <div class="card">
+                <div id="chart" style="height: 415px">
+
+                </div>
+            </div>
+        </div>
+        <div class="col-6 pe-0">
+            <div class="card">
+                <div id="chart_2" style="height: 415px">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4 mb-4">
+    <div class="card p-3">
+        <table class="dataTable table table-hover table-striped" id="MyTable" style="overflow: auto;">
+            <thead>
+                <tr>
+                    <th>
+                        Date
+                    </th>
+                    <th style="text-align-last: center !important">
+                        <select class="headerSelect" id="CTFSelect" onchange="SelectedFilter('CTF')">
+                            <option selected>CTF</option>
+                            <option>Netgear</option>
+                            <option>Arlo</option>
+                        </select>
+                    </th>
+                    <th style="text-align-last: center !important">
+                        <select class="headerSelect" id="ModelSelect" onchange="SelectedFilter('Model')">
+                            <option selected>Model</option>
+                            <option>U12C298T55 U12C298T55</option>
+                        </select>
+                    </th>
+                    <th style="text-align-last: center !important">
+                        <select class="headerSelect" id="TypeSelect" onchange="SelectedFilter('Type')">
+                            <option selected>Type</option>
+                            <option>CTR</option>
+                            <option>FW</option>
+                            <option>RMA</option>
+                            <option>YR</option>
+                            <option>MOH</option>
+                            <option>Orther</option>
+                        </select>
+                    </th>
+                    <th style="text-align: center !important">
+                        Works
+                    </th>
+                    <th style="text-align: center">
+                        Owner
+                    </th>
+                    <th style="margin-left: -5px;">
+                        Due Date
+                    </th>
+                    <th style="text-align-last: center !important">
+                        <select class="headerSelect" id="StatusSelect" onchange="SelectedFilter('Status')">
+                            <option selected>Status</option>
+                            <option>Done</option>
+                            <option>On-going</option>
+                            <option>Open</option>
+                            <option>Close</option>
+                        </select>
+                    </th>
+                    <th class="text-end">
+
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="col_1">
+                        <label class="col-12"><b>2023-04-26</b></label>
+                        <label class="col-12">08:46</label>
+                    </td>
+                    <td class="col_2">Netgear</td>
+                    <td class="col_6">U12C298T55</td>
+                    <td class="col_2">CTR</td>
+                    <td class="col_3">
+                        <p class="text-over">
+                            1. Confirm product issue - Damage location ?2. Confirm with ME use cutting tool? 3. Co-work with IPQC add check cutting tool into list checking4. . Confirm product issue - Damage location ?2. Confirm
+                        </p>
+                    </td>
+                    <td class="col_5">
+                        <a href="#" class="col-12">Phạm Văn Hoàng</a>
+                    </td>
+                    <td class="col_1">
+                        <label class="col-12"><b>2023-04-26</b></label>
+                        <label class="col-12">08:46</label>
+                    </td>
+                    <td class="col_6">
+                        <span class="badge rounded-pill bg-warning text-dark">On-going</span>
+                    </td>
+                    <td class="col_7">
+                        <button type="button" class="btn btn-warning" data-toggle="tooltip" title="Edit">
+                            <i class="bi bi-pencil-square"></i>
+                        </button>
+                        <button type="button" class="btn btn-info" data-toggle="tooltip" title="Detail">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button type="button" class="btn btn-danger" data-toggle="tooltip" title="Delete">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,707 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <title>@ViewBag.Title | Handover System</title>
+
+    <!-- Favicons -->
+    <link href="~/MyAssets/image/fii-logo.jpg" rel="icon">
+    <link href="~/MyAssets/Css/GoogleFonts.css" rel="stylesheet" />
+    <!-- Google Fonts -->
+    <!-- Vendor CSS Files -->
+    <link href="~/NiceAdmin/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="~/NiceAdmin/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="~/NiceAdmin/vendor/simple-datatables/style.css" rel="stylesheet">
+    <link href="~/MyAssets/toats/toastr.min.css" rel="stylesheet">
+    <link href="~/MyAssets/Vertical-Timeline/vertical-timeline.css" rel="stylesheet">
+    <link href="~/NiceAdmin/daterangepicker-master/daterangepicker.css" rel="stylesheet" />
+    <!-- Template Main CSS File -->
+    <link href="~/NiceAdmin/css/style.css" rel="stylesheet">
+    <!-- Custume CSS File -->
+    <link href="~/MyAssets/Css/MainPage.css?@Guid.NewGuid()" rel="stylesheet">
+
+</head>
+<body class="toggle-sidebar">
+    @{
+        string temp = ViewContext.RouteData.DataTokens["area"].ToString();
+        string cardId = "";
+        string VnName = "";
+        string EnName = "";
+        string CnName = "";
+        string Depart = "";
+        string Roles = "";
+        try
+        {
+            cardId = Request.Cookies["UserCookies"]["CardID"];
+            VnName = Server.UrlDecode(Request.Cookies["UserCookies"]["VnName"]);
+            EnName = Request.Cookies["UserCookies"]["EnName"];
+            CnName = Server.UrlDecode(Request.Cookies["UserCookies"]["CnName"]);
+            Depart = Request.Cookies["UserCookies"]["Depart"];
+            Roles = Request.Cookies["UserCookies"]["Role"];
+        }
+        catch
+        {
+            Url.Action();
+        }
+    }
+    <!-- ======= Header ======= -->
+    <header id="header" class="header fixed-top d-flex align-items-center">
+        <div class="d-flex align-items-center justify-content-between">
+            <a href="/Manager/Manager/Dashboard" class="logo d-flex align-items-center">
+                <img src="~/MyAssets/image/fii-logo.jpg" alt="">
+                <span class="d-none d-lg-block">Handover System</span>
+            </a>
+            <i class="bi bi-list toggle-sidebar-btn"></i>
+        </div><!-- End Logo -->
+        <div class="header-nav d-flex ms-auto">
+            <a class="btn btn-outline-primary me-5 fw-bold" id="btn_new_update"><i class="bi bi-star me-1"></i>New Update</a>
+            <ul class="d-flex align-items-center">
+                <li class="nav-item dropdown pe-3">
+                    <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+                        @{
+                            if (Roles == "1")
+                            {
+                                <span class="badge bg-danger">
+                                    <i class="bi bi-check-circle me-1"></i>
+                                    <label>Manager</label>
+                                </span>
+                            }
+                            if (Roles == "2")
+                            {
+                                <span class="badge bg-warning">
+                                    <i class="bi bi-check-circle me-1"></i>
+                                    <label>Leader</label>
+                                </span>
+                            }
+                            if (Roles == "3")
+                            {
+                                <span class="badge bg-success">
+                                    <i class="bi bi-check-circle me-1"></i>
+                                    <label>Member</label>
+                                </span>
+                            }
+                        }
+                        <span class="d-none d-md-block dropdown-toggle ps-2">@cardId</span>
+                    </a><!-- End Profile Iamge Icon -->
+
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+                        <li class="dropdown-header">
+                            <h6>@Depart - @CnName</h6>
+                            <span>@VnName</span>
+                        </li> <!-- Name -->
+
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center" href="/Manager/Manager/Dashboard">
+                                <i class="bi bi-person"></i>
+                                <span>Profile</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center" onclick="ShowChangePassModal()">
+                                <i class="bi bi-person"></i>
+                                <span>Change Password</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center" href="/Login/Logout">
+                                <i class="bi bi-box-arrow-right"></i>
+                                <span>Sign Out</span>
+                            </a>
+                        </li>
+
+                    </ul><!-- End Profile Dropdown Items -->
+                </li><!-- End Profile Nav -->
+
+            </ul>
+        </div><!-- End Icons Navigation -->
+
+    </header><!-- End Header -->
+    <!-- ======= Sidebar ======= -->
+    <aside id="sidebar" class="sidebar">
+        <ul class="sidebar-nav">
+            <li class="nav-item">
+                <a class="nav-link @((temp == "Manager") ? "" : "collapsed")" href="/Manager/Manager/Dashboard">
+                    <i class="bi bi-grid"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li><!-- End Dashboard Nav -->
+            <li class="nav-item">
+                <a class="nav-link @((temp.Contains("Handover")) ? "" : "collapsed")" data-bs-target="#page-nav" data-bs-toggle="collapse" href="#">
+                    <i class="bi bi-layout-text-window-reverse"></i><span>Works</span><i class="bi bi-chevron-down ms-auto"></i>
+                </a>
+                <ul id="page-nav" class="nav-content @(temp.Contains("Handover") ? "" : "collapse")" data-bs-parent="#sidebar-nav">
+                    @{
+                        if (Depart == "PE" || ViewBag.Role == 1)
+                        {
+                            <li>
+                                <a href="/HandoverPE/Works/Index" class="@((temp =="HandoverPE" ) ? "active" : "")">
+                                    <i class="bi bi-circle"></i><span>PE - PE</span>
+                                </a>
+                            </li>
+                        }
+                        if (Depart == "RE" || ViewBag.Role == 1)
+                        {
+                            <li>
+                                <a href="/HandoverRE/Works/Index" class="@((temp == "HandoverRE") ? "active" : "")">
+                                    <i class="bi bi-circle"></i><span>RE - RE</span>
+                                </a>
+                            </li>
+                        }
+                    }
+                    <li>
+                        <a href="/Handover/Works/Index" class="@((temp == "Handover") ? "active" : "")">
+                            <i class="bi bi-circle"></i><span>PE - RE</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/HandoverEVM/Works/Index" class="@((temp.Contains("HandoverEVM")) ? "active" : "")">
+                            <i class="bi bi-circle"></i><span>EVM</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+            <li class="nav-heading">Pages</li>
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="/Login/Logout">
+                    <i class="bi bi-box-arrow-in-right"></i>
+                    <span>Sign Out</span>
+                </a>
+            </li><!-- End Login Page Nav -->
+        </ul>
+
+    </aside><!-- End Sidebar-->
+
+    <main id="main" class="main">
+        @RenderBody()
+    </main><!-- End #main -->
+    <!-- ======= Footer ======= -->
+    <footer id="footer" class="footer fixed-bottom" style="background-color: #e7effb; padding: 0">
+        <div class="col-12 copyright">
+            &copy; <strong><span>AIOT</span></strong>.
+        </div>
+    </footer><!-- End Footer -->
+
+    <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+
+
+    <!-- Change Pass modal -->
+    <div class="modal fade" id="ChangePassModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="deleteModalHead" style="font-weight: bold">Change Password</h3>
+                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal" aria-label="Close" style="border: 0"><i class="bi bi-x"></i></button>
+                </div>
+                <div class="modal-body" id="delete_CardBody">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text col-4">Password</span>
+                        <input type="password" class="form-control" id="old_Pass" autocomplete="new-password">
+                    </div>
+                    <div class="input-group mb-3 ">
+                        <span class="input-group-text col-4">New password</span>
+                        <input type="password" class="form-control" id="new_Pass1" autocomplete="new-password">
+                    </div>
+                    <div class="input-group mb-3 ">
+                        <span class="input-group-text col-4">Confirm password</span>
+                        <input type="password" class="form-control" id="new_Pass2" autocomplete="new-password">
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-outline-success" onclick="ChangePass()" style="border-radius: 0.375rem">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal_new_update" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">NEW UPDATE <i class="bi bi-star me-1"></i></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ol>
+                        <li>
+                            <p class="fw-bold">Thêm chức năng xuất bảng ra file excel.</p>
+                            <div class="border-1">
+                                <img src="~/MyAssets/image/new_update/export_excel.png" style="height: 300px;" />
+                            </div>
+                        </li>
+                        <li class="mt-5">
+                            <p class="fw-bold">Thêm công việc cho nhiều người bằng cách thêm dấu ","</p>
+                            <div class="border-1">
+                                <img src="~/MyAssets/image/new_update/add_new_more_owner.png" />
+                            </div>
+                        </li>
+                        <li class="mt-5">
+                            <p class="fw-bold">Lọc kết quả Dashboard và theo tháng</p>
+                            <div class="border-1">
+                                <img src="~/MyAssets/image/new_update/dashboard_new.png" style="height: 300px;" />
+                            </div>
+                        </li>
+                    </ol>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Add modal -->
+    <div class="modal fade" id="add_modal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header" style="color: #0d6efd;">
+                    <h3 class="modal-title" style="font-weight: bold;">ADD NEW WORK</h3>
+                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal" aria-label="Close"><i class="bi bi-x" style="font-size: 20px"></i></button>
+                </div>
+                <div class="modal-body">
+                    <form class="row g-3">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-12">
+                                    <label class="form-label">Date Start</label>
+                                    <input type="datetime-local" class="form-control" id="add_startDate">
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Due Date</label>
+                                    <input type="datetime-local" class="form-control" id="add_dueDate">
+                                </div>
+                                <div class="col-12 required">
+                                    <label class="form-label">Owner Request</label>
+                                    <input class="form-control" type="email" multiple id="add_ownerRq" list="userRq_list" />
+                                    <datalist id="userRq_list">
+                                    </datalist>
+                                </div>
+                                <div class="col-12 required">
+                                    <label class="form-label ">Owner Receive</label>
+                                    <input class="form-control" type="email" multiple id="add_ownerRc" list="userRc_list">
+                                    <datalist id="userRc_list">
+                                    </datalist>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-12">
+                                    <label for="inputAddress" class="form-label">CTF</label>
+                                    <select class="form-select" id="add_CTF">
+                                        <option selected>Netgear</option>
+                                        <option>Arlo</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Model</label>
+                                    <input class="form-control" type="text" id="add_Model" list="models_list" name="models list" autocomplete="off">
+                                    <datalist id="models_list">
+                                    </datalist>
+                                </div>
+                                <div class="col-12 required">
+                                    <label for="inputAddress" class="form-label">Type</label>
+                                    <select class="form-select" id="add_type">
+                                        <option selected>CTR</option>
+                                        <option>FW</option>
+                                        <option>RMA</option>
+                                        <option>YR</option>
+                                        <option>MOH</option>
+                                        <option>Orther</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 required">
+                                    <label class="form-label">Status</label>
+                                    <select class="form-select" id="add_status">
+                                        <option selected>On-going</option>
+                                        <option>Done</option>
+                                        <option>Open</option>
+                                        <option>Close</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 required">
+                            <label for="inputName5" class="form-label">Work</label>
+                            <textarea class="form-control" id="add_work"></textarea>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="inputName5" class="form-label">Result</label>
+                            <textarea class="form-control" id="add_result"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-outline-primary" id="SaveBtn" onclick="AddModal_Save()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Edit modal -->
+    <div class="modal fade" id="EditWorkModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header" style="color: #ffc107;">
+                    <h3 class="modal-title" id="modalEditHead" style="font-weight:bold">Edit work</h3>
+                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal" aria-label="Close"><i class="bi bi-x" style="font-size: 20px;"></i></button>
+                </div>
+                <div class="modal-body">
+                    <form class="row g-3">
+                        <div class="col-6 row">
+                            <div class="card" style="padding-left: 0;">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <label class="form-label">ID</label>
+                                            <input type="text" class="form-control" id="Edit_ID" disabled>
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label">Date</label>
+                                            <input type="datetime-local" class="form-control" id="Edit_Date">
+                                        </div>
+                                        <div class="col-6 required">
+                                            <label class="form-label">Owner Request</label>
+                                            <input list="userRq_list" name="editReq" class="form-control" type="text" id="Edit_UserReq" autocomplete="off">
+                                        </div>
+                                        <div class="col-6 required">
+                                            <label class="form-label">Owner Receive</label>
+                                            <input list="userRc_list" name="editRec" class="form-control" type="email" id="Edit_UserRec" autocomplete="off">
+                                        </div>
+                                        <div class="col-6" style="margin-bottom: 2rem">
+                                            <label class="form-label">Status</label>
+                                            <select class="form-select" id="Edit_Status">
+                                                <option>On-going</option>
+                                                <option>Done</option>
+                                                <option>Open</option>
+                                                <option>Close</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-6">
+                                            <label for="inputAddress" class="form-label">Type</label>
+                                            <select class="form-select" id="Edit_Type">
+                                                <option selected>CTR</option>
+                                                <option>FW</option>
+                                                <option>RMA</option>
+                                                <option>YR</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 row">
+                            <div class="card">
+                                <div class="card-body" id="cardEdit">
+                                    <label class="form-label">Works</label>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="inputName5" class="form-label">Work result</label>
+                            <textarea class="form-control" id="Edit_Detail"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-outline-primary" id="EditSaveBtn" onclick="EditModal_Save()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Edit modal 2 -->
+    <div class="modal fade" id="Edit2Modal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header" style="color: #ffc107;">
+                    <h3 class="modal-title" style="font-weight: bold;" id="Edit2_Title">EDIT WORK</h3>
+                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal" aria-label="Close"><i class="bi bi-x" style="font-size: 20px"></i></button>
+                </div>
+                <div class="modal-body">
+                    <form class="row g-3">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-12">
+                                    <label class="form-label">Date</label>
+                                    <input type="datetime-local" class="form-control" id="Edit2_StartDate">
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Due Date</label>
+                                    <input type="datetime-local" class="form-control" id="Edit2_DueDate">
+                                </div>
+                                <div class="col-12 required">
+                                    <label class="form-label">Owner Request</label>
+                                    <input list="userRq_list" name="listRQ" class="form-control" type="text" id="Edit2_OwnerRequest" autocomplete="off">
+                                </div>
+                                <div class="col-12 required">
+                                    <label class="form-label">Owner Receive</label>
+                                    <input list="userRc_list" name="listRC" class="form-control" type="email" id="Edit2_OwnerReceive" multiple autocomplete="off">
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-12">
+                                    <label for="inputAddress" class="form-label">CTF</label>
+                                    <select class="form-select" id="Edit2_CTF">
+                                        <option selected>Netgear</option>
+                                        <option>Arlo</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Model</label>
+                                    <input list="models_list" name="listModels" class="form-control" type="text" id="Edit2_Model" autocomplete="off">
+                                </div>
+                                <div class="col-12 required">
+                                    <label for="inputAddress" class="form-label">Type</label>
+                                    <select class="form-select" id="Edit2_Type">
+                                        <option selected>CTR</option>
+                                        <option>FW</option>
+                                        <option>RMA</option>
+                                        <option>YR</option>
+                                        <option>MOH</option>
+                                        <option>Orther</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 required">
+                                    <label class="form-label">Status</label>
+                                    <select class="form-select" id="Edit2_Status">
+                                        <option selected>On-going</option>
+                                        <option>Done</option>
+                                        <option>Open</option>
+                                        <option>Close</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 required">
+                            <label for="inputName5" class="form-label">Work</label>
+                            <textarea class="form-control" id="Edit2_Work"></textarea>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="inputName5" class="form-label">Result</label>
+                            <textarea class="form-control" id="Edit2_Result"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-outline-primary" id="SaveBtn" onclick="EditModal_Save()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Delete modal -->
+    <div class="modal fade" id="DeleteWorkModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" style=" color: #dc3545;">
+                    <h3 class="modal-title" id="deleteModalHead" style="font-weight: bold">Delete record</h3>
+                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal" aria-label="Close" style="border: 0"><i class="bi bi-x"></i></button>
+                </div>
+                <div class="modal-body" id="delete_CardBody">
+                    <ul>
+                        <li>
+                            <div class="row">
+                                <p class="fw-bold col-5">CTF</p>
+                                <p class="col-7" id="detail_ctf"></p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="row">
+                                <p class="fw-bold col-5">Model</p>
+                                <p class="col-7" id="detail_model"></p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="row">
+                                <p class="fw-bold col-5">Type</p>
+                                <p class="col-7" id="detail_type"></p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="row">
+                                <p class="fw-bold col-5">Owner Request</p>
+                                <p class="col-7" id="detail_rq"></p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="row">
+                                <p class="fw-bold col-5">Owner Receive</p>
+                                <p class="col-7" id="detail_rc"></p>
+                            </div>
+                        </li>
+                    </ul>
+                    <p class="fw-bold text-danger">This action is irreversible, do you want to proceed?</p>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger" id="deleteBtn" onclick="DeteleWork()" style="border-radius: 0.375rem">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Detail modal -->
+    <div class="modal fade" id="DetailWorkModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title text-info" style="font-weight: bold;" id="Details_Title">DETAIL HANDOVER WORK</h3>
+                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal" aria-label="Close"><i class="bi bi-x" style="font-size: 20px"></i></button>
+                </div>
+                <div class="modal-body" style="margin: 0">
+                    <div class="row">
+                        <div class="col-5" id="col_5">
+                            <div class="fs-5" id="details_info">
+                                <!---->
+                                <div class="row">
+                                    <div class="col-3">
+                                        <p class="card-text">CTF</p>
+                                    </div>
+                                    <div class="col-8">
+                                        <p class="card-text" id="details_ctf">Arlo</p>
+                                    </div>
+                                </div>
+                                <!---->
+                                <div class="row">
+                                    <div class="col-3">
+                                        <p class="card-text">Model</p>
+                                    </div>
+                                    <div class="col-8">
+                                        <p class="card-text" id="details_model">Phoenix</p>
+                                    </div>
+                                </div>
+                                <!---->
+                                <div class="row">
+                                    <div class="col-3">
+                                        <p class="card-text">Type</p>
+                                    </div>
+                                    <div class="col-8">
+                                        <p class="card-text" id="details_type">CTR</p>
+                                    </div>
+                                </div>
+                                <!---->
+                                <div class="row" id="row_detail_footer">
+                                    <div class="col-3">
+                                        <p class="card-text">Status</p>
+                                    </div>
+                                    <div class="col-8" id="details_status">
+                                        <p class="card-text badge rounded-pill bg-warning">On-going</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="fs-5" id="details_owner">
+                                <!---->
+                                <div class="row" id="details_cardHead">
+                                    <p class="card-text">Owner request</p>
+                                </div>
+                                <!---->
+                                <div class="row">
+                                    <div class="col-3">
+                                        <p class="card-text">Card ID</p>
+                                    </div>
+                                    <div class="col-8">
+                                        <p class="card-text" id="details_cardid_rq">V090xxxx</p>
+                                    </div>
+                                </div>
+                                <!---->
+                                <div class="row">
+                                    <div class="col-3">
+                                        <p class="card-text">Name</p>
+                                    </div>
+                                    <div class="col-8">
+                                        <p class="card-text" id="details_name_rq">Tempalte</p>
+                                    </div>
+                                </div>
+                                <!---->
+                                <div class="row">
+                                    <div class="col-3">
+                                        <p class="card-text">Department</p>
+                                    </div>
+                                    <div class="col-8">
+                                        <p class="card-text" id="details_depart_rq">TE</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="ownerRc_Card">
+
+                            </div>
+
+                        </div>
+                        <div class="col-7" id="col_7">
+                            <p class="fs-5 text-center" id="details_date"><label class="fw-bold text-success">2023-04-23 00:00</label> - <label class="fw-bold text-danger">2023-04-23 00:00</label></p>
+
+                            <div class="accordion accordion-flush" id="accordionFlushExample">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="flush-headingOne">
+                                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="true" aria-controls="flush-collapseOne">
+                                            Work
+                                        </button>
+                                    </h2>
+                                    <div id="flush-collapseOne" class="accordion-collapse collapse show" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample" style="">
+                                        <div class="accordion-body" id="details_work" style="white-space:pre-line">
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="flush-headingTwo">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+                                            Result
+                                        </button>
+                                    </h2>
+                                    <div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo" data-bs-parent="#accordionFlushExample">
+                                        <div class="accordion-body" id="details_result" style="white-space:pre-line">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item" id="detail_showHistory">
+                                    <h2 class="accordion-header" id="flush-headingThree">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
+                                            History
+                                        </button>
+                                    </h2>
+                                    <div id="flush-collapseThree" class="accordion-collapse collapse" aria-labelledby="flush-headingThree" data-bs-parent="#accordionFlushExample">
+                                        <div class="accordion-body" id="details_history">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Vendor JS Files -->
+    <script src="~/NiceAdmin/js/jquery-3.4.1.min.js"></script>
+    <script src="~/NiceAdmin/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/NiceAdmin/vendor/simple-datatables/simple-datatables.js?@Guid.NewGuid()"></script>
+    <script src="~/MyAssets/toats/toastr.min.js"></script>
+    <script src="~/MyAssets/Vertical-Timeline/vertical-timeline.js"></script>
+    <script src="~/NiceAdmin/daterangepicker-master/moment.min.js"></script>
+    <script src="~/NiceAdmin/daterangepicker-master/daterangepicker.js"></script>
+    <!-- Template Main JS File -->
+    <script src="~/NiceAdmin/js/main.js"></script>
+    <!-- Custom JS File -->
+    <script src="~/MyAssets/Js/functionCommon.js?@Guid.NewGuid()"></script>
+    <script src="~/MyAssets/Js/MainPage.js?@Guid.NewGuid()"></script>
+
+    @RenderSection("render", required: false)
+
+</body>
+
+</html>

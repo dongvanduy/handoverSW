@@ -1,0 +1,14 @@
+bin/
+obj/
+packages/
+*.user
+*.suo
+*.db
+*.log
+*.env
+publish/
+.vscode/
+.idea/
+.vs
+.svn
+node_modules/
