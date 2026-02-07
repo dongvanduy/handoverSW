@@ -1,5 +1,6 @@
 ﻿var pieChart;
 var colChart;
+var userStatusChart;
 var dateTimeNow = new Date(Date.now());
 var CheckUserList = false;
 var ThisUser = '';
@@ -8,6 +9,7 @@ $(function () {
     ThisUser = $('#info_ID').text();
     PieChartInit();
     ColChartInit();
+    UserStatusChartInit();
     
     if (window.localStorage.getItem('DashboardId') != null) {
         $('#TypeSelectData').val(window.localStorage.getItem('DashboardId'));
@@ -149,6 +151,49 @@ function ColChartInit() {
     colChart = new ApexCharts(document.querySelector("#chart_2"), options);
     colChart.render();
 }
+function UserStatusChartInit() {
+    var options = {
+        series: [],
+        noData: {
+            text: 'No data to display',
+            align: 'center',
+            verticalAlign: 'middle',
+            offsetX: 0,
+            offsetY: 0,
+            style: {
+                fontSize: '18px',
+                color: '#777'
+            }
+        },
+        colors: ['#ffc107', '#198754', '#dc3545', '#6c757d'],
+        chart: {
+            type: 'bar',
+            height: '400px',
+            stacked: true,
+            toolbar: {
+                show: false
+            }
+        },
+        plotOptions: {
+            bar: {
+                horizontal: true,
+                barHeight: '60%'
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        xaxis: {
+            categories: []
+        },
+        legend: {
+            position: 'top'
+        }
+    };
+
+    userStatusChart = new ApexCharts(document.querySelector("#chart_user_status"), options);
+    userStatusChart.render();
+}
 // Chart Data and Count Up
 function CountUp(id, number) {
     const box = document.getElementById(id);
@@ -166,9 +211,9 @@ function CountUp(id, number) {
     }, 50)
 }
 function CreateChartData(listWorks, updatePieChart, updateColChart) {
+    let PieChartData = [0, 0, 0, 0];
     // Pie Chart
     if (updatePieChart){
-        let PieChartData = [0, 0, 0, 0]
         $.each(listWorks, function (key, value) {
             switch (value.Status) {
                 case 'Done': {
@@ -202,6 +247,29 @@ function CreateChartData(listWorks, updatePieChart, updateColChart) {
             pieChart.updateSeries(PieChartData, true);
         }
     }
+    else {
+        $.each(listWorks, function (key, value) {
+            switch (value.Status) {
+                case 'Done': {
+                    PieChartData[1]++;
+                    return;
+                }
+                case 'Close': {
+                    PieChartData[3]++;
+                    return;
+                }
+                case 'Open': {
+                    PieChartData[2]++;
+                    return;
+                }
+                case 'On-going': {
+                    PieChartData[0]++;
+                    return;
+                }
+            }
+        });
+    }
+    UpdateStatusTotals(PieChartData);
     // Column Chart
     if (updateColChart){
         const oldCategories = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -245,6 +313,67 @@ function CreateChartData(listWorks, updatePieChart, updateColChart) {
             series: ColChartData
         })
     }
+}
+
+function UpdateStatusTotals(statusData) {
+    const totalAll = statusData.reduce((sum, value) => sum + value, 0);
+    $('#Total_OnGoing').text(statusData[0]);
+    $('#Total_Done').text(statusData[1]);
+    $('#Total_Open').text(statusData[2]);
+    $('#Total_Close').text(statusData[3]);
+    $('#Total_All').text(totalAll);
+}
+
+function UpdateUserStatusChart(listWorks, listUsers) {
+    const statusKeys = ['On-going', 'Done', 'Open', 'Close'];
+    const statusSeries = statusKeys.map(name => ({ name: name, data: [] }));
+    const userMap = new Map();
+    const categories = [];
+
+    if (Array.isArray(listUsers)) {
+        listUsers.forEach(user => {
+            userMap.set(user.CardID, {
+                label: `${user.CardID} - ${user.VnName}`,
+                counts: [0, 0, 0, 0]
+            });
+        });
+    }
+
+    listWorks.forEach(work => {
+        const ownerReceive = (work.OwnerReceive || '').split(',');
+        ownerReceive.forEach(ownerId => {
+            const trimmedId = ownerId.trim();
+            if (!trimmedId) {
+                return;
+            }
+            if (!userMap.has(trimmedId)) {
+                userMap.set(trimmedId, { label: trimmedId, counts: [0, 0, 0, 0] });
+            }
+            const statusIndex = statusKeys.indexOf(work.Status);
+            if (statusIndex >= 0) {
+                userMap.get(trimmedId).counts[statusIndex] += 1;
+            }
+        });
+    });
+
+    userMap.forEach(value => {
+        const hasData = value.counts.some(count => count > 0);
+        if (hasData) {
+            categories.push(value.label);
+            value.counts.forEach((count, index) => {
+                statusSeries[index].data.push(count);
+            });
+        }
+    });
+
+    if (categories.length === 0) {
+        userStatusChart.updateOptions({ xaxis: { categories: [] } });
+        userStatusChart.updateSeries([], true);
+        return;
+    }
+
+    userStatusChart.updateOptions({ xaxis: { categories: categories } });
+    userStatusChart.updateSeries(statusSeries, true);
 }
 
 // Get Data for Header
@@ -359,6 +488,7 @@ function GetDataDashboard(month, updatePieChart, updateColChart) {
                     CheckUserList = true;
                 }
                 CreateChartData(res.ListWorks, updatePieChart, updateColChart);
+                UpdateUserStatusChart(res.ListWorks, res.ListUser);
                 GetDataForHeader();
             }
         },
