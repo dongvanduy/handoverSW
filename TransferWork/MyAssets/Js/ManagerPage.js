@@ -152,7 +152,7 @@ function ColChartInit() {
     colChart.render();
 }
 function UserStatusChartInit() {
-    const statusKeys = ['On-going', 'Done', 'Open', 'Close'];
+    const statusKeys = ['Close', 'On-going', 'Done', 'Open'];
     var options = {
         series: [],
         noData: {
@@ -166,7 +166,7 @@ function UserStatusChartInit() {
                 color: '#777'
             }
         },
-        colors: ['#ffc107', '#198754', '#dc3545', '#6c757d'],
+        colors: ['#6c757d', '#ffc107', '#198754', '#dc3545'],
         chart: {
             type: 'bar',
             height: '400px',
@@ -185,7 +185,7 @@ function UserStatusChartInit() {
             enabled: false
         },
         xaxis: {
-            categories: statusKeys
+            categories: []
         },
         legend: {
             position: 'top'
@@ -329,22 +329,53 @@ function UpdateStatusTotals(statusData) {
 }
 
 function UpdateUserStatusChart(listWorks) {
-    const statusKeys = ['On-going', 'Done', 'Open', 'Close'];
-    const statusTotals = [0, 0, 0, 0];
+    const statusKeys = ['Close', 'On-going', 'Done', 'Open'];
+    const memberStatusMap = new Map();
 
     listWorks.forEach(work => {
         const statusIndex = statusKeys.indexOf(work.Status);
-        if (statusIndex >= 0) {
-            statusTotals[statusIndex] += 1;
+        if (statusIndex < 0) {
+            return;
         }
+
+        const members = new Set();
+        if (work.OwnerRequest) {
+            members.add(work.OwnerRequest.trim());
+        }
+        if (work.OwnerReceive) {
+            work.OwnerReceive.split(',').forEach(member => {
+                const trimmedMember = member.trim();
+                if (trimmedMember) {
+                    members.add(trimmedMember);
+                }
+            });
+        }
+
+        members.forEach(member => {
+            if (!memberStatusMap.has(member)) {
+                memberStatusMap.set(member, new Array(statusKeys.length).fill(0));
+            }
+            memberStatusMap.get(member)[statusIndex] += 1;
+        });
     });
 
-    if (statusTotals.every(total => total === 0)) {
+    const categories = Array.from(memberStatusMap.keys());
+    if (categories.length === 0) {
         userStatusChart.updateSeries([], true);
         return;
     }
 
-    userStatusChart.updateSeries([{ name: 'Tasks', data: statusTotals }], true);
+    const series = statusKeys.map((status, index) => ({
+        name: status,
+        data: categories.map(member => memberStatusMap.get(member)[index] || 0)
+    }));
+
+    userStatusChart.updateOptions({
+        xaxis: {
+            categories: categories
+        }
+    }, false, true);
+    userStatusChart.updateSeries(series, true);
 }
 
 // Get Data for Header
