@@ -214,6 +214,7 @@ function CreateChartData(listWorks, updatePieChart, updateColChart) {
     let PieChartData = [0, 0, 0, 0];
     // Pie Chart
     if (updatePieChart){
+        let PieChartData = [0, 0, 0, 0];
         $.each(listWorks, function (key, value) {
             switch (value.Status) {
                 case 'Done': {
@@ -490,6 +491,9 @@ function GetDataDashboard(month, updatePieChart, updateColChart) {
                     CheckUserList = true;
                 }
                 CreateChartData(res.ListWorks, updatePieChart, updateColChart);
+                if (res.StatusTotals) {
+                    UpdateStatusTotals(res.StatusTotals);
+                }
                 UpdateUserStatusChart(res.ListWorks, res.ListUser);
                 GetDataForHeader();
             }
