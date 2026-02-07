@@ -152,6 +152,7 @@ function ColChartInit() {
     colChart.render();
 }
 function UserStatusChartInit() {
+    const statusKeys = ['On-going', 'Done', 'Open', 'Close'];
     var options = {
         series: [],
         noData: {
@@ -169,22 +170,22 @@ function UserStatusChartInit() {
         chart: {
             type: 'bar',
             height: '400px',
-            stacked: true,
             toolbar: {
                 show: false
             }
         },
         plotOptions: {
             bar: {
-                horizontal: true,
-                barHeight: '60%'
+                horizontal: false,
+                columnWidth: '55%',
+                endingShape: 'rounded'
             }
         },
         dataLabels: {
             enabled: false
         },
         xaxis: {
-            categories: []
+            categories: statusKeys
         },
         legend: {
             position: 'top'
@@ -327,56 +328,23 @@ function UpdateStatusTotals(statusData) {
     $('#Total_All').text(totalAll);
 }
 
-function UpdateUserStatusChart(listWorks, listUsers) {
+function UpdateUserStatusChart(listWorks) {
     const statusKeys = ['On-going', 'Done', 'Open', 'Close'];
-    const statusSeries = statusKeys.map(name => ({ name: name, data: [] }));
-    const userMap = new Map();
-    const categories = [];
-
-    if (Array.isArray(listUsers)) {
-        listUsers.forEach(user => {
-            userMap.set(user.CardID, {
-                label: `${user.CardID} - ${user.VnName}`,
-                counts: [0, 0, 0, 0]
-            });
-        });
-    }
+    const statusTotals = [0, 0, 0, 0];
 
     listWorks.forEach(work => {
-        const ownerReceive = (work.OwnerReceive || '').split(',');
-        ownerReceive.forEach(ownerId => {
-            const trimmedId = ownerId.trim();
-            if (!trimmedId) {
-                return;
-            }
-            if (!userMap.has(trimmedId)) {
-                userMap.set(trimmedId, { label: trimmedId, counts: [0, 0, 0, 0] });
-            }
-            const statusIndex = statusKeys.indexOf(work.Status);
-            if (statusIndex >= 0) {
-                userMap.get(trimmedId).counts[statusIndex] += 1;
-            }
-        });
-    });
-
-    userMap.forEach(value => {
-        const hasData = value.counts.some(count => count > 0);
-        if (hasData) {
-            categories.push(value.label);
-            value.counts.forEach((count, index) => {
-                statusSeries[index].data.push(count);
-            });
+        const statusIndex = statusKeys.indexOf(work.Status);
+        if (statusIndex >= 0) {
+            statusTotals[statusIndex] += 1;
         }
     });
 
-    if (categories.length === 0) {
-        userStatusChart.updateOptions({ xaxis: { categories: [] } });
+    if (statusTotals.every(total => total === 0)) {
         userStatusChart.updateSeries([], true);
         return;
     }
 
-    userStatusChart.updateOptions({ xaxis: { categories: categories } });
-    userStatusChart.updateSeries(statusSeries, true);
+    userStatusChart.updateSeries([{ name: 'Tasks', data: statusTotals }], true);
 }
 
 // Get Data for Header
@@ -494,7 +462,7 @@ function GetDataDashboard(month, updatePieChart, updateColChart) {
                 if (res.StatusTotals) {
                     UpdateStatusTotals(res.StatusTotals);
                 }
-                UpdateUserStatusChart(res.ListWorks, res.ListUser);
+                UpdateUserStatusChart(res.ListWorks);
                 GetDataForHeader();
             }
         },
