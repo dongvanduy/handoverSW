@@ -87,6 +87,11 @@ function registerUser() {
     const passwordInp = document.getElementById('registerPassword');
     const confirmInp = document.getElementById('registerConfirmPassword');
 
+    if (!cardIdInp || !vnNameInp || !departmentInp || !passwordInp || !confirmInp) {
+        alert("Register form is not ready. Please refresh and try again.");
+        return;
+    }
+
     const inputs = [cardIdInp, vnNameInp, departmentInp, passwordInp, confirmInp];
     inputs.forEach(input => {
         input.classList.remove("is-invalid");
@@ -145,7 +150,7 @@ function registerUser() {
         datatype: "json/text",
         success: function (respons) {
             if (respons.Status === "Success") {
-                $('#RegisterModal').modal('hide');
+                hideRegisterModal();
                 cardIdInp.value = "";
                 vnNameInp.value = "";
                 enNameInp.value = "";
@@ -172,4 +177,21 @@ function registerUser() {
             alert("Couldn’t register because of server configuration problems. Contact site administrator.");
         }
     });
+}
+
+function hideRegisterModal() {
+    const modalElement = document.getElementById('RegisterModal');
+    if (!modalElement) {
+        return;
+    }
+
+    if (window.bootstrap && window.bootstrap.Modal) {
+        const modalInstance = window.bootstrap.Modal.getInstance(modalElement) || new window.bootstrap.Modal(modalElement);
+        modalInstance.hide();
+        return;
+    }
+
+    if (window.jQuery && typeof $('#RegisterModal').modal === 'function') {
+        $('#RegisterModal').modal('hide');
+    }
 }

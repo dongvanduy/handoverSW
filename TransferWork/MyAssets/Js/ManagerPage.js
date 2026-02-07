@@ -211,9 +211,9 @@ function CountUp(id, number) {
     }, 50)
 }
 function CreateChartData(listWorks, updatePieChart, updateColChart) {
+    let PieChartData = [0, 0, 0, 0];
     // Pie Chart
     if (updatePieChart){
-        let PieChartData = [0, 0, 0, 0]
         $.each(listWorks, function (key, value) {
             switch (value.Status) {
                 case 'Done': {
@@ -249,6 +249,29 @@ function CreateChartData(listWorks, updatePieChart, updateColChart) {
 
         UpdateStatusTotals(PieChartData);
     }
+    else {
+        $.each(listWorks, function (key, value) {
+            switch (value.Status) {
+                case 'Done': {
+                    PieChartData[1]++;
+                    return;
+                }
+                case 'Close': {
+                    PieChartData[3]++;
+                    return;
+                }
+                case 'Open': {
+                    PieChartData[2]++;
+                    return;
+                }
+                case 'On-going': {
+                    PieChartData[0]++;
+                    return;
+                }
+            }
+        });
+    }
+    UpdateStatusTotals(PieChartData);
     // Column Chart
     if (updateColChart){
         const oldCategories = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
