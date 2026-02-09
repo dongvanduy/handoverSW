@@ -31,8 +31,27 @@ namespace HandOver.Areas.Manager.Controllers
         }
         private static bool flagGetListUser = false;
         private static object ListUser = null;
+        private sealed class UserStatusSummary
+        {
+            public string CardID { get; set; }
+            public string DisplayName { get; set; }
+            public string Department { get; set; }
+            public int OnGoing { get; set; }
+            public int Done { get; set; }
+            public int Open { get; set; }
+            public int Close { get; set; }
+        }
         public async Task<ActionResult> GetDataDashboard(string id, int month)
         {
+            if (ListUsers == null || !ListUsers.Any())
+            {
+                ListUsers = await Task.Run(() => db.Users.ToList());
+            }
+            if (ListModel == null || !ListModel.Any())
+            {
+                ListModel = await Task.Run(() => db.Models1.ToList());
+            }
+
             List<Work> ListWork = db.Works.ToList();
             List<Work> newListWork = null;
             int[] statusTotals = new int[4];
@@ -57,72 +76,8 @@ namespace HandOver.Areas.Manager.Controllers
                     }
                 }
                 
-                if (month == 0)
-                {
-                    switch (id)
-                    {
-                        case "All":
-                            {
-                                newListWork = await Task.Run(() => ListWork.ToList());                                
-                                break;
-                            }
-                        case "PE":
-                            {
-                                newListWork = await Task.Run(() => ListWork.Where(w => w.Flow == "PE-PE").ToList());
-                                break;
-                            }
-                        case "RE":
-                            {
-                                newListWork = await Task.Run(() => ListWork.Where(w => w.Flow == "RE-RE").ToList());
-                                break;
-                            }
-                        case "PE-RE":
-                            {
-                                newListWork = await Task.Run(() => ListWork.Where(w => w.Flow == "PE-RE" || w.Flow == "RE-PE").ToList());
-                               break;
-                            }
-                        default:
-                            {
-                                newListWork = await Task.Run(() =>
-                                        ListWork.Where(work => work.OwnerReceive.Split(',').Any(idTemp => idTemp.Trim() == id)).ToList()
-                                    );
-                                break;
-                            }
-                    }
-                }
-                else
-                {
-                    switch (id)
-                    {
-                        case "All":
-                            {
-                                newListWork = await Task.Run(() => ListWork.Where(w => w.DateStart.Month == month).ToList());
-                                break;
-                            }
-                        case "PE":
-                            {
-                                newListWork = await Task.Run(() => ListWork.Where(w => w.Flow == "PE-PE" && w.DateStart.Month == month).ToList());
-                                break;
-                            }
-                        case "RE":
-                            {
-                                newListWork = await Task.Run(() => ListWork.Where(w => w.Flow == "RE-RE" && w.DateStart.Month == month).ToList());
-                                break;
-                            }
-                        case "PE-RE":
-                            {
-                                newListWork = await Task.Run(() => ListWork.Where(w => w.Flow == "PE-RE" || w.Flow == "RE-PE" && w.DateStart.Month == month).ToList());
-                                break;
-                            }
-                        default:
-                            {
-                                newListWork = await Task.Run(() =>
-                                        ListWork.Where(work => work.OwnerReceive.Split(',').Any(idTemp => idTemp.Trim() == id) && work.DateStart.Month == month).ToList()
-                                    );
-                                break;
-                            }
-                    }
-                }
+                newListWork = await Task.Run(() => FilterWorks(ListWork, id, month));
+                var userStatusSummary = await Task.Run(() => BuildUserStatusSummary(newListWork, ListUsers));
 
                 newListWork = await Task.Run(() => GetInfoOwner(newListWork, ListUsers));
                 if (!flagGetListUser)
@@ -131,13 +86,42 @@ namespace HandOver.Areas.Manager.Controllers
                     flagGetListUser = true;
                     
                 }
-                return Json(new { success = true, ListWorks = newListWork, ListUser = ListUser, ListModel = ListModel, StatusTotals = statusTotals }, JsonRequestBehavior.AllowGet);
+                return Json(new
+                {
+                    success = true,
+                    ListWorks = newListWork,
+                    ListUser = ListUser,
+                    ListModel = ListModel,
+                    StatusTotals = statusTotals,
+                    UserStatusSummary = userStatusSummary
+                }, JsonRequestBehavior.AllowGet);
             }
             catch
             {
                 return Json(new { error = true, message = "Wrong filter. Please double check or contact us!" }, JsonRequestBehavior.AllowGet);
             }
             
+        }
+
+        public JsonResult GetUserStatusSummary(string id, int month)
+        {
+            try
+            {
+                if (ListUsers == null || !ListUsers.Any())
+                {
+                    ListUsers = db.Users.ToList();
+                }
+
+                List<Work> ListWork = db.Works.ToList();
+                List<Work> filteredWorks = FilterWorks(ListWork, id, month);
+                var summary = BuildUserStatusSummary(filteredWorks, ListUsers);
+
+                return Json(new { success = true, data = summary }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { error = true, message = "Wrong filter. Please double check or contact us!" }, JsonRequestBehavior.AllowGet);
+            }
         }
 
         // Function
@@ -168,6 +152,114 @@ namespace HandOver.Areas.Manager.Controllers
                     .Select(u => new { Department = u.Department, CardID = u.CardID, VnName = u.VnName, EnName = u.EnName, CnName = u.CnName });
             }           
             return infoUser;
+        }
+
+        private List<Work> FilterWorks(List<Work> listWork, string id, int month)
+        {
+            if (month == 0)
+            {
+                switch (id)
+                {
+                    case "All":
+                        return listWork.ToList();
+                    case "PE":
+                        return listWork.Where(w => w.Flow == "PE-PE").ToList();
+                    case "RE":
+                        return listWork.Where(w => w.Flow == "RE-RE").ToList();
+                    case "PE-RE":
+                        return listWork.Where(w => w.Flow == "PE-RE" || w.Flow == "RE-PE").ToList();
+                    default:
+                        return listWork.Where(work => work.OwnerReceive.Split(',').Any(idTemp => idTemp.Trim() == id)).ToList();
+                }
+            }
+
+            switch (id)
+            {
+                case "All":
+                    return listWork.Where(w => w.DateStart.Month == month).ToList();
+                case "PE":
+                    return listWork.Where(w => w.Flow == "PE-PE" && w.DateStart.Month == month).ToList();
+                case "RE":
+                    return listWork.Where(w => w.Flow == "RE-RE" && w.DateStart.Month == month).ToList();
+                case "PE-RE":
+                    return listWork.Where(w => (w.Flow == "PE-RE" || w.Flow == "RE-PE") && w.DateStart.Month == month).ToList();
+                default:
+                    return listWork.Where(work => work.OwnerReceive.Split(',').Any(idTemp => idTemp.Trim() == id) && work.DateStart.Month == month).ToList();
+            }
+        }
+
+        private List<UserStatusSummary> BuildUserStatusSummary(List<Work> listWork, List<User> users)
+        {
+            var userLookup = users
+                .GroupBy(u => u.CardID)
+                .ToDictionary(g => g.Key, g => g.First(), StringComparer.OrdinalIgnoreCase);
+
+            var summaries = new Dictionary<string, UserStatusSummary>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var work in listWork)
+            {
+                var members = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                if (!string.IsNullOrWhiteSpace(work.OwnerRequest))
+                {
+                    members.Add(work.OwnerRequest.Trim());
+                }
+
+                if (!string.IsNullOrWhiteSpace(work.OwnerReceive))
+                {
+                    foreach (var member in work.OwnerReceive.Split(','))
+                    {
+                        var trimmedMember = member.Trim();
+                        if (!string.IsNullOrWhiteSpace(trimmedMember))
+                        {
+                            members.Add(trimmedMember);
+                        }
+                    }
+                }
+
+                foreach (var memberId in members)
+                {
+                    if (!summaries.TryGetValue(memberId, out var summary))
+                    {
+                        userLookup.TryGetValue(memberId, out var user);
+                        var displayName = memberId;
+                        var department = string.Empty;
+                        if (user != null)
+                        {
+                            var name = !string.IsNullOrWhiteSpace(user.VnName)
+                                ? user.VnName
+                                : (!string.IsNullOrWhiteSpace(user.EnName) ? user.EnName : user.CnName);
+                            displayName = string.IsNullOrWhiteSpace(name) ? user.CardID : $"{user.CardID} - {name}";
+                            department = user.Department;
+                        }
+
+                        summary = new UserStatusSummary
+                        {
+                            CardID = memberId,
+                            DisplayName = displayName,
+                            Department = department
+                        };
+                        summaries[memberId] = summary;
+                    }
+
+                    switch (work.Status)
+                    {
+                        case "On-going":
+                            summary.OnGoing++;
+                            break;
+                        case "Done":
+                            summary.Done++;
+                            break;
+                        case "Open":
+                            summary.Open++;
+                            break;
+                        case "Close":
+                            summary.Close++;
+                            break;
+                    }
+                }
+            }
+
+            return summaries.Values.OrderBy(s => s.DisplayName).ToList();
         }
 
         // Event
