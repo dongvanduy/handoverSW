@@ -1,7 +1,9 @@
 ﻿using HandOver.Common;
 using System;
 using System.Data.Entity.Migrations;
+using System.Globalization;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -12,6 +14,7 @@ namespace HandOver.Controllers
     {
         // GET: Login
         private readonly TransferWorkEntities db = new TransferWorkEntities();
+        private static readonly HttpClient client = new HttpClient();
         public ActionResult Index()// Login view and check remember login
         {
             return View();
@@ -28,10 +31,22 @@ namespace HandOver.Controllers
             {                           
                 if (user.Password == "-1")
                 {
-                    user.Password = Password;
-                    user.StartDate = null;
-                    user.CnName = string.IsNullOrWhiteSpace(user.CnName) ? "N/A" : user.CnName;
-                    user.Gender = string.IsNullOrWhiteSpace(user.Gender) ? "N/A" : user.Gender;
+                    string userData = await GetUserDataAsync(CardID);
+                    if (string.IsNullOrWhiteSpace(userData))
+                    {
+                        return Json(new { Status = "No Card ID" });
+                    }
+
+                    string hireDate = Function.GetTextString(userData, "\"HIREDATE\":\"", "\",\"");
+                    string cnName = Function.GetTextString(userData, "\"USER_NAME\":\"", "\",\"");
+                    string gender = Function.GetTextString(userData, "\"SEX\":\"", "\",\"");
+
+                    DateTime dateStart = DateTime.ParseExact(hireDate, "yyyy/MM/dd", CultureInfo.InvariantCulture);
+
+                    user.Password = hireDate.Replace("/", "");
+                    user.StartDate = dateStart;
+                    user.CnName = cnName;
+                    user.Gender = gender;
                     db.Users.AddOrUpdate(user);
                     db.SaveChanges();
                 }
@@ -168,6 +183,23 @@ namespace HandOver.Controllers
             Response.Cookies["UserCookies"]["Password"] = Function.GetStringMD5(Password);
             Response.Cookies["UserCookies"]["LoginTime"] = DateTime.Now.ToString("yyyy/MM/dd HH:MM:ss");
             Response.Cookies["UserCookies"].Expires = DateTime.Now.AddDays(15);
+        }
+
+        private async Task<string> GetUserDataAsync(string CardID)
+        {
+            try
+            {
+                string url = "http://10.224.69.100:8080/postman/api/hr/getEmpObj?id=" + CardID;
+                HttpResponseMessage response = await client.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+
+                string responseBody = await response.Content.ReadAsStringAsync();
+                return responseBody;
+            }
+            catch (HttpRequestException)
+            {
+                return "";
+            }
         }
     }
    
