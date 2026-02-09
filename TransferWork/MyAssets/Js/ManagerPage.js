@@ -152,7 +152,6 @@ function ColChartInit() {
     colChart.render();
 }
 function UserStatusChartInit() {
-    const statusKeys = ['Close', 'On-going', 'Done', 'Open'];
     var options = {
         series: [],
         noData: {
@@ -166,7 +165,7 @@ function UserStatusChartInit() {
                 color: '#777'
             }
         },
-        colors: ['#6c757d', '#ffc107', '#198754', '#dc3545'],
+        colors: ['#ffc107', '#198754', '#dc3545', '#6c757d'],
         chart: {
             type: 'bar',
             height: '400px',
@@ -329,46 +328,23 @@ function UpdateStatusTotals(statusData) {
 }
 
 function UpdateUserStatusChart(listWorks) {
-    const statusKeys = ['Close', 'On-going', 'Done', 'Open'];
-    const memberStatusMap = new Map();
-
-    listWorks.forEach(work => {
-        const statusIndex = statusKeys.indexOf(work.Status);
-        if (statusIndex < 0) {
-            return;
-        }
-
-        const members = new Set();
-        if (work.OwnerRequest) {
-            members.add(work.OwnerRequest.trim());
-        }
-        if (work.OwnerReceive) {
-            work.OwnerReceive.split(',').forEach(member => {
-                const trimmedMember = member.trim();
-                if (trimmedMember) {
-                    members.add(trimmedMember);
-                }
-            });
-        }
-
-        members.forEach(member => {
-            if (!memberStatusMap.has(member)) {
-                memberStatusMap.set(member, new Array(statusKeys.length).fill(0));
+    if (!listWorks || listWorks.length === 0) {
+        userStatusChart.updateOptions({
+            xaxis: {
+                categories: []
             }
-            memberStatusMap.get(member)[statusIndex] += 1;
-        });
-    });
-
-    const categories = Array.from(memberStatusMap.keys());
-    if (categories.length === 0) {
+        }, false, true);
         userStatusChart.updateSeries([], true);
         return;
     }
 
-    const series = statusKeys.map((status, index) => ({
-        name: status,
-        data: categories.map(member => memberStatusMap.get(member)[index] || 0)
-    }));
+    const categories = listWorks.map(item => item.DisplayName || item.CardID);
+    const series = [
+        { name: 'On-going', data: listWorks.map(item => item.OnGoing || 0) },
+        { name: 'Done', data: listWorks.map(item => item.Done || 0) },
+        { name: 'Open', data: listWorks.map(item => item.Open || 0) },
+        { name: 'Close', data: listWorks.map(item => item.Close || 0) }
+    ];
 
     userStatusChart.updateOptions({
         xaxis: {
@@ -493,12 +469,34 @@ function GetDataDashboard(month, updatePieChart, updateColChart) {
                 if (res.StatusTotals) {
                     UpdateStatusTotals(res.StatusTotals);
                 }
-                UpdateUserStatusChart(res.ListWorks);
+                GetUserStatusSummary(type, month);
                 GetDataForHeader();
             }
         },
         error: function (err) {
             toastr["error"]('Connect to server error. Please contact us!', 'CONNECT ERROR');
+        }
+    });
+}
+
+function GetUserStatusSummary(type, month) {
+    $.ajax({
+        type: "GET",
+        url: "/Manager/Manager/GetUserStatusSummary",
+        data: {
+            id: type,
+            month: month
+        },
+        contentType: "application/json;charset=utf-8",
+        success: function (res) {
+            if (res.success) {
+                UpdateUserStatusChart(res.data);
+            } else {
+                UpdateUserStatusChart([]);
+            }
+        },
+        error: function () {
+            UpdateUserStatusChart([]);
         }
     });
 }
