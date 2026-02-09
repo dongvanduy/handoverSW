@@ -1,6 +1,5 @@
 ﻿var pieChart;
 var colChart;
-var userStatusChart;
 var dateTimeNow = new Date(Date.now());
 var CheckUserList = false;
 var ThisUser = '';
@@ -9,7 +8,6 @@ $(function () {
     ThisUser = $('#info_ID').text();
     PieChartInit();
     ColChartInit();
-    UserStatusChartInit();
     
     if (window.localStorage.getItem('DashboardId') != null) {
         $('#TypeSelectData').val(window.localStorage.getItem('DashboardId'));
@@ -151,49 +149,6 @@ function ColChartInit() {
     colChart = new ApexCharts(document.querySelector("#chart_2"), options);
     colChart.render();
 }
-function UserStatusChartInit() {
-    var options = {
-        series: [],
-        noData: {
-            text: 'No data to display',
-            align: 'center',
-            verticalAlign: 'middle',
-            offsetX: 0,
-            offsetY: 0,
-            style: {
-                fontSize: '18px',
-                color: '#777'
-            }
-        },
-        colors: ['#ffc107', '#198754', '#dc3545', '#6c757d'],
-        chart: {
-            type: 'bar',
-            height: '400px',
-            toolbar: {
-                show: false
-            }
-        },
-        plotOptions: {
-            bar: {
-                horizontal: false,
-                columnWidth: '55%',
-                endingShape: 'rounded'
-            }
-        },
-        dataLabels: {
-            enabled: false
-        },
-        xaxis: {
-            categories: []
-        },
-        legend: {
-            position: 'top'
-        }
-    };
-
-    userStatusChart = new ApexCharts(document.querySelector("#chart_user_status"), options);
-    userStatusChart.render();
-}
 // Chart Data and Count Up
 function CountUp(id, number) {
     const box = document.getElementById(id);
@@ -327,33 +282,6 @@ function UpdateStatusTotals(statusData) {
     $('#Total_All').text(totalAll);
 }
 
-function UpdateUserStatusChart(listWorks) {
-    if (!listWorks || listWorks.length === 0) {
-        userStatusChart.updateOptions({
-            xaxis: {
-                categories: []
-            }
-        }, false, true);
-        userStatusChart.updateSeries([], true);
-        return;
-    }
-
-    const categories = listWorks.map(item => item.DisplayName || item.CardID);
-    const series = [
-        { name: 'On-going', data: listWorks.map(item => item.OnGoing || 0) },
-        { name: 'Done', data: listWorks.map(item => item.Done || 0) },
-        { name: 'Open', data: listWorks.map(item => item.Open || 0) },
-        { name: 'Close', data: listWorks.map(item => item.Close || 0) }
-    ];
-
-    userStatusChart.updateOptions({
-        xaxis: {
-            categories: categories
-        }
-    }, false, true);
-    userStatusChart.updateSeries(series, true);
-}
-
 // Get Data for Header
 function GetDataForHeader() {  
     const vals = $('#TypeSelectData').val();
@@ -469,38 +397,11 @@ function GetDataDashboard(month, updatePieChart, updateColChart) {
                 if (res.StatusTotals) {
                     UpdateStatusTotals(res.StatusTotals);
                 }
-                if (res.UserStatusSummary) {
-                    UpdateUserStatusChart(res.UserStatusSummary);
-                } else {
-                    GetUserStatusSummary(type, month);
-                }
                 GetDataForHeader();
             }
         },
         error: function (err) {
             toastr["error"]('Connect to server error. Please contact us!', 'CONNECT ERROR');
-        }
-    });
-}
-
-function GetUserStatusSummary(type, month) {
-    $.ajax({
-        type: "GET",
-        url: "/Manager/Manager/GetUserStatusSummary",
-        data: {
-            id: type,
-            month: month
-        },
-        contentType: "application/json;charset=utf-8",
-        success: function (res) {
-            if (res.success) {
-                UpdateUserStatusChart(res.data);
-            } else {
-                UpdateUserStatusChart([]);
-            }
-        },
-        error: function () {
-            UpdateUserStatusChart([]);
         }
     });
 }
