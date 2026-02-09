@@ -77,6 +77,7 @@ namespace HandOver.Areas.Manager.Controllers
                 }
                 
                 newListWork = await Task.Run(() => FilterWorks(ListWork, id, month));
+                var userStatusSummary = await Task.Run(() => BuildUserStatusSummary(newListWork, ListUsers));
 
                 newListWork = await Task.Run(() => GetInfoOwner(newListWork, ListUsers));
                 if (!flagGetListUser)
@@ -85,7 +86,15 @@ namespace HandOver.Areas.Manager.Controllers
                     flagGetListUser = true;
                     
                 }
-                return Json(new { success = true, ListWorks = newListWork, ListUser = ListUser, ListModel = ListModel, StatusTotals = statusTotals }, JsonRequestBehavior.AllowGet);
+                return Json(new
+                {
+                    success = true,
+                    ListWorks = newListWork,
+                    ListUser = ListUser,
+                    ListModel = ListModel,
+                    StatusTotals = statusTotals,
+                    UserStatusSummary = userStatusSummary
+                }, JsonRequestBehavior.AllowGet);
             }
             catch
             {

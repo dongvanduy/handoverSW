@@ -469,7 +469,11 @@ function GetDataDashboard(month, updatePieChart, updateColChart) {
                 if (res.StatusTotals) {
                     UpdateStatusTotals(res.StatusTotals);
                 }
-                GetUserStatusSummary(type, month);
+                if (res.UserStatusSummary) {
+                    UpdateUserStatusChart(res.UserStatusSummary);
+                } else {
+                    GetUserStatusSummary(type, month);
+                }
                 GetDataForHeader();
             }
         },
